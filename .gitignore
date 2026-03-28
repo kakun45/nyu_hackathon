@@ -1,0 +1,24 @@
+# Environment variables
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+.venv/
+build/
+dist/
+
+# Dataset (Too large for GitHub without LFS)
+hmda_2017_ny_all-records_labels.csv
+
+# IDEs
+.vscode/
+.idea/
+.DS_Store
+
+# Temporary files
+models.json
+main.py

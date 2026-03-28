@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NYC Data Investigator | Hackathon Prototype</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --bg: #0f172a;
+            --card: rgba(30, 41, 59, 0.7);
+            --text: #f8fafc;
+            --accent: #10b981;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            padding: 2rem;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .glass-card {
+            background: var(--card);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 2.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            font-weight: 300;
+            color: #94a3b8;
+            margin-bottom: 2rem;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        input,
+        select {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 0.8rem 1.2rem;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        input {
+            flex-grow: 1;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+        }
+
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            background: #4f46e5;
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .result-section {
+            display: flex;
+            gap: 2rem;
+            margin-top: 2rem;
+            height: 450px;
+            /* Fixed height to keep everything in view */
+        }
+
+        .ai-response-wrapper {
+            flex: 1.2;
+            position: relative;
+            background: rgba(15, 23, 42, 0.4);
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .ai-tag {
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            background: var(--primary);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            z-index: 10;
+        }
+
+        .ai-response {
+            padding: 1.5rem;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #cbd5e1;
+            white-space: pre-wrap;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+
+        /* Markdown Styling */
+        .ai-response h1,
+        .ai-response h2,
+        .ai-response h3 {
+            color: white;
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .ai-response p {
+            margin-bottom: 0.8rem;
+        }
+
+        .ai-response ul,
+        .ai-response ol {
+            margin-bottom: 0.8rem;
+            padding-left: 1.5rem;
+        }
+
+        .ai-response li {
+            margin-bottom: 0.4rem;
+        }
+
+        .ai-response strong {
+            color: var(--primary);
+        }
+
+        .ai-response blockquote {
+            border-left: 3px solid var(--primary);
+            padding-left: 1rem;
+            margin: 1rem 0;
+            font-style: italic;
+            background: rgba(99, 102, 241, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .chart-container {
+            flex: 1;
+            background: rgba(15, 23, 42, 0.4);
+            padding: 1.5rem;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px;
+        }
+
+        canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        .loader {
+            display: none;
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .result-section {
+                grid-template-columns: 1fr;
+            }
+
+            .controls {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="glass-card">
+            <h1>Investigator</h1>
+            <p id="subtitle" class="subtitle">Interrogating NYC Mortgage Data live with Gemini 2.5 Flash Lite</p>
+
+            <div class="controls">
+                <input id="question" placeholder="Ask a question about the data...">
+                <select id="borough">
+                    <option value="Brooklyn">Brooklyn</option>
+                    <option value="Queens">Queens</option>
+                    <option value="Manhattan">Manhattan</option>
+                </select>
+                <button onclick="ask()">
+                    Analyze
+                    <div id="loader" class="loader"></div>
+                </button>
+            </div>
+
+            <div class="result-section">
+                <div class="ai-response-wrapper">
+                    <div class="ai-tag">AI INSIGHT</div>
+                    <div id="response" class="ai-response">
+                        Select a borough and ask a question to begin investigation...
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="chart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let chart;
+        let typingInterval;
+
+        async function ask() {
+            const q = document.getElementById("question").value;
+            const b = document.getElementById("borough").value;
+            const loader = document.getElementById("loader");
+            const responseEl = document.getElementById("response");
+
+            // UI Reset
+            clearInterval(typingInterval);
+            responseEl.innerText = "";
+            loader.style.display = "inline-block";
+
+            try {
+                const res = await fetch(`http://127.0.0.1:8000/analyze?question=${encodeURIComponent(q)}&borough=${b}`);
+                const data = await res.json();
+
+                loader.style.display = "none";
+
+                if (data.answer) {
+                    if (data.model) document.getElementById("subtitle").innerText = `Interrogating NYC Mortgage Data live with ${data.model}`;
+                    typeText(data.answer);
+                    renderChart(data.data, b);
+                } else {
+                    responseEl.innerText = "Error: " + JSON.stringify(data);
+                }
+            } catch (err) {
+                loader.style.display = "none";
+                responseEl.innerText = "Connection error. Is the backend running?";
+                console.error(err);
+            }
+        }
+
+        function typeText(text) {
+            let i = 0;
+            const el = document.getElementById("response");
+            let currentText = "";
+            el.innerHTML = "";
+
+            typingInterval = setInterval(() => {
+                currentText += text[i];
+                // Using marked to render markdown on the fly
+                el.innerHTML = marked.parse(currentText);
+                i++;
+                if (i >= text.length) {
+                    clearInterval(typingInterval);
+                }
+            }, 10);
+        }
+
+        function renderChart(d, boroughName) {
+            const ctx = document.getElementById('chart').getContext('2d');
+            if (chart) chart.destroy();
+
+            chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ["Approved", "Denied", "Black Denial", "White Denial"],
+                    datasets: [{
+                        label: boroughName + ' Metrics (%)',
+                        data: [d.approved, d.denied, d.black_denial_rate, d.white_denial_rate],
+                        backgroundColor: [
+                            'rgba(99, 102, 241, 0.8)',
+                            'rgba(244, 63, 94, 0.8)',
+                            'rgba(16, 185, 129, 0.8)',
+                            'rgba(234, 179, 8, 0.8)'
+                        ],
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            grid: { color: 'rgba(255,255,255,0.1)' },
+                            ticks: { color: '#94a3b8' }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#94a3b8' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Initial message
+        setTimeout(() => {
+            typeText("Welcome, investigator. Select a borough and ask about mortgage bias to uncover the data.");
+        }, 500);
+    </script>
+
+</body>
+
+</html>

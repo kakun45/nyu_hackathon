@@ -1,0 +1,5 @@
+{
+  "Brooklyn": {"approved": 62, "denied": 38, "black_denial_rate": 45, "white_denial_rate": 18},
+  "Queens": {"approved": 70, "denied": 30, "black_denial_rate": 40, "white_denial_rate": 15},
+  "Manhattan": {"approved": 75, "denied": 25, "black_denial_rate": 35, "white_denial_rate": 12}
+}
