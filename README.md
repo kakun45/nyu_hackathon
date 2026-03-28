@@ -3,7 +3,7 @@
 A high-fidelity hackathon prototype for interrogating NYC mortgage data (HMDA) using **Gemini 2.5 Flash Lite**.
 
 ## 🌟 Features
-- **Live Analyst Illusion**: Real-time typing animations for AI insights.
+- **Live Analyst**: Real-time typing animations for AI insights.
 - **Deep Data Integration**: Cross-references borough-level summaries with a 446k record statewide dataset.
 - **Dynamic Visualization**: Real-time Chart.js dashboards that update based on the borough.
 - **Glassmorphism UI**: A premium, modern interface designed for high-impact demos.
