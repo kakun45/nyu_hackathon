@@ -2,6 +2,9 @@
 
 A high-fidelity hackathon prototype for interrogating NYC mortgage data (HMDA) using **Gemini 2.5 Flash Lite**.
 
+Make your interrogation happened, sample questions:
+"Are mortgage approvals fair in this borough?" or "Why is there disparity?" "I'm Black; what can I do to increase my chances for a mortgage approval in this borough?" `select from a dropdown`
+
 <img width="1105" height="802" alt="Screenshot 2026-03-28 at 11 16 48 PM" src="https://github.com/user-attachments/assets/e34d2c46-2292-4b5c-a821-4434a6b96e72" />
 <img width="1088" height="789" alt="Screenshot 2026-03-28 at 11 19 31 PM" src="https://github.com/user-attachments/assets/462eccee-3783-4df3-ba7d-ddf3d8bf8c5a" />
 
